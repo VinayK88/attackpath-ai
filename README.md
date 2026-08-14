@@ -9,6 +9,7 @@
 [![MITRE ATT&CK](https://img.shields.io/badge/MITRE-ATT%26CK-E34F26)](https://attack.mitre.org/)
 [![OWASP](https://img.shields.io/badge/OWASP-Agentic%20Top%2010-000000?logo=owasp)](https://genai.owasp.org/)
 [![Safety](https://img.shields.io/badge/Safety-simulation%20only-F97316)](#safety-boundary)
+[![Tests](https://github.com/VinayK88/attackpath-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/VinayK88/attackpath-ai/actions/workflows/ci.yml)
 
 **Simulate → Correlate → Detect → Explain → Contain safely**
 
