@@ -1,0 +1,83 @@
+name: Import standalone project
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/import-project.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out target repository
+        uses: actions/checkout@v4
+
+      - name: Import AttackPath AI
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 https://github.com/VinayK88/cybersecurity-analytics.git /tmp/cybersecurity-analytics
+          find . -mindepth 1 -maxdepth 1 ! -name .git ! -name .github -exec rm -rf {} +
+          cp -R /tmp/cybersecurity-analytics/attackpath-ai/. .
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          find . -name '*.pyc' -delete
+
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("README.md")
+          text = path.read_text(encoding="utf-8")
+          replacements = {
+              "PYTHONPATH=attackpath-ai python -m attackpath_ai.cli self-test": "python -m attackpath_ai.cli self-test",
+              "python attackpath-ai/build_notebook.py": "python build_notebook.py",
+              "streamlit run attackpath-ai/app.py": "streamlit run app.py",
+              "Run the CLI from the project directory or set \u0060PYTHONPATH=attackpath-ai\u0060:": "Run the CLI from the repository root:",
+              "cd attackpath-ai\n": "",
+              "python -m unittest discover -s attackpath-ai/tests -v": "python -m unittest discover -s tests -v",
+              "python attackpath-ai/validate_project.py": "python validate_project.py",
+          }
+          for old, new in replacements.items():
+              text = text.replace(old, new)
+          path.write_text(text, encoding="utf-8")
+          PY
+
+          printf '%s\n' 'streamlit>=1.32,<2' > requirements.txt
+          printf '%s\n' '__pycache__/' '*.py[cod]' '.pytest_cache/' '.venv/' 'venv/' '.DS_Store' > .gitignore
+
+          cat > .github/workflows/ci.yml <<'YAML'
+          name: Tests
+
+          on:
+            push:
+              branches: [main]
+            pull_request:
+
+          permissions:
+            contents: read
+
+          jobs:
+            test:
+              runs-on: ubuntu-latest
+              steps:
+                - uses: actions/checkout@v4
+                - uses: actions/setup-python@v5
+                  with:
+                    python-version: "3.12"
+                - run: python -m pip install --upgrade pip
+                - run: pip install -r requirements.txt
+                - run: python -m unittest discover -s tests -v
+                - run: python validate_project.py
+          YAML
+
+          git add -A
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Import AttackPath AI as standalone project"
+          git push
