@@ -23,6 +23,16 @@ AttackPath AI is a safe cyber range that models how a modern compromise can move
 
 The project is motivated by current evidence: Google Cloud reported that identity issues underpinned initial access in **83% of major cloud and SaaS incidents** in its H1 2026 report, while Anthropic documented AI being used to chain reconnaissance, exploitation, credential theft, and lateral movement. See [Google Cloud Threat Horizons H1 2026](https://cloud.google.com/security/report/resources/cloud-threat-horizons-report-h1-2026) and [Anthropic's AI-enabled cyber-threat mapping](https://www.anthropic.com/research/attack-navigator).
 
+## 60-second reviewer path
+
+Short on time? Review the project in this order:
+
+1. [Understand the attack-path problem](#explain-it-like-im-5).
+2. [Inspect the measured synthetic replay](#measured-synthetic-replay).
+3. [Follow the graph and evidence architecture](#architecture).
+4. [See the interactive analyst dashboard](#interactive-dashboard).
+5. [Reproduce the demo locally](#quick-start).
+
 ## Explain it like I'm 5
 
 Imagine a thief gets a copied key, walks through several rooms, and asks a robot helper to open the final safe.
